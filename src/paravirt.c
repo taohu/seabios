@@ -240,6 +240,14 @@ qemu_cfg_legacy(void)
                      , sizeof(numacount) + max_cpu*sizeof(u64)
                      , numacount*sizeof(u64));
 
+    u64 dimm_count;
+    qemu_cfg_select(QEMU_CFG_NUMA);
+    qemu_cfg_skip((1 + max_cpu + numacount) * sizeof(u64));
+    qemu_cfg_read(&dimm_count, sizeof(dimm_count));
+    qemu_romfile_add("etc/numa-dimm-map", QEMU_CFG_NUMA
+                     , (2 + max_cpu + numacount) * sizeof(u64),
+                     dimm_count * 3 * sizeof(u64));
+
     // e820 data
     u32 count32;
     qemu_cfg_read_entry(&count32, QEMU_CFG_E820_TABLE, sizeof(count32));
